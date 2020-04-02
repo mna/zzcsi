@@ -29,6 +29,47 @@ const (
 	RstTitleModeQryLabelsHex  = 1
 	RstTitleModeSetLabelsUTF8 = 2
 	RstTitleModeQryLabelsUTF8 = 3
+
+	TabClrCurrentCol = 0
+	TabClrAll        = 3
+
+	SetModeKeybAction = 2
+	SetModeIns        = 4
+	SetModeSendRecv   = 12
+	SetModeAutoNewln  = 20
+
+	// TODO: SetPrvMode constants
+
+	MediaCopyPrnScr      = 0
+	MediaCopyPrnContrOff = 4
+	MediaCopyPrnContrOn  = 5
+	MediaCopyHTMLScr     = 10
+	MediaCopySVGScr      = 11
+
+	MediaCopyDECPrnCurLn    = 1
+	MediaCopyDECAutoPrnOff  = 4
+	MediaCopyDECAutoPrnOn   = 5
+	MediaCopyDECPrnCompDisp = 10
+	MediaCopyDECPrnAll      = 11
+
+	RstModeKeybAction = 2
+	RstModeRepl       = 4
+	RstModeSendRecv   = 12
+	RstModeNormNewln  = 20
+
+	// TODO: RstPrvMode constants
+
+	// TODO: ChAttr constants
+
+	SetKeyModKeyb      = 0
+	SetKeyModCurKeys   = 1
+	SetKeyModFnKeys    = 2
+	SetKeyModOtherKeys = 4
+
+	RstKeyModKeyb      = 0
+	RstKeyModCurKeys   = 1
+	RstKeyModFnKeys    = 2
+	RstKeyModOtherKeys = 4
 )
 
 // CSI represents a Control Sequence Introducer function as supported
@@ -65,6 +106,26 @@ const (
 	_ // TODO: Initiate highlight mouse tracking
 	RstTitleMode
 	EraseCh
+	CurBwdTab
+	ChColAbs
+	ChColRel
+	RepCh
+	PriDevAttr
+	TerDevAttr
+	SecDevAttr
+	ChLnAbs
+	ChLnRel
+	ChLnCol
+	TabClr
+	SetMode
+	SetPrvMode
+	MediaCopy
+	MediaCopyDEC
+	RstMode
+	RstPrvMode
+	ChAttr
+	SetKeyMod
+	RstKeyMod
 )
 
 var (
@@ -96,6 +157,26 @@ var (
 	scrlDown     = []byte("\x1b[\x01T")
 	rstTitleMode = []byte("\x1b[>\x02T")
 	eraseCh      = []byte("\x1b[\x01X")
+	curBwdTab    = []byte("\x1b[\x01Z")
+	chColAbs     = []byte("\x1b[\x02`")
+	chColRel     = []byte("\x1b[\x02a")
+	repCh        = []byte("\x1b[\x01b")
+	priDevAttr   = []byte("\x1b[\x01c")
+	terDevAttr   = []byte("\x1b[=\x01c")
+	secDevAttr   = []byte("\x1b[>\x01c")
+	chLnAbs      = []byte("\x1b[\x02d")
+	chLnRel      = []byte("\x1b[\x02e")
+	chLnCol      = []byte("\x1b[\x01;\x01f")
+	tabClr       = []byte("\x1b[\x01g")
+	setMode      = []byte("\x1b[\x02h")
+	setPrvMode   = []byte("\x1b[?\x02h")
+	mediaCopy    = []byte("\x1b[\x02i")
+	mediaCopyDEC = []byte("\x1b[?\x02i")
+	rstMode      = []byte("\x1b[\x02l")
+	rstPrvMode   = []byte("\x1b[?\x02l")
+	chAttr       = []byte("\x1b[\x02m")
+	setKeyMod    = []byte("\x1b[>\x01;\x01m")
+	rstKeyMod    = []byte("\x1b[>\x01m")
 )
 
 var csiSeqs = [...][]byte{
@@ -124,6 +205,26 @@ var csiSeqs = [...][]byte{
 
 	RstTitleMode: rstTitleMode,
 	EraseCh:      eraseCh,
+	CurBwdTab:    curBwdTab,
+	ChColAbs:     chColAbs,
+	ChColRel:     chColRel,
+	RepCh:        repCh,
+	PriDevAttr:   priDevAttr,
+	TerDevAttr:   terDevAttr,
+	SecDevAttr:   secDevAttr,
+	ChLnAbs:      chLnAbs,
+	ChLnRel:      chLnRel,
+	ChLnCol:      chLnCol,
+	TabClr:       tabClr,
+	SetMode:      setMode,
+	SetPrvMode:   setPrvMode,
+	MediaCopy:    mediaCopy,
+	MediaCopyDEC: mediaCopyDEC,
+	RstMode:      rstMode,
+	RstPrvMode:   rstPrvMode,
+	ChAttr:       chAttr,
+	SetKeyMod:    setKeyMod,
+	RstKeyMod:    rstKeyMod,
 }
 
 // Func returns the sequence of bytes to execute this CSI function with
