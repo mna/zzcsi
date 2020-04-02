@@ -6,6 +6,31 @@ import (
 	"strings"
 )
 
+const (
+	EraseScrBelow    = 0
+	EraseScrAbove    = 1
+	EraseScrAll      = 2
+	EraseScrSavedLns = 3
+
+	SelEraseScrBelow    = 0
+	SelEraseScrAbove    = 1
+	SelEraseScrAll      = 2
+	SelEraseScrSavedLns = 3
+
+	EraseLnRight = 0
+	EraseLnLeft  = 1
+	EraseLnAll   = 2
+
+	SelEraseLnRight = 0
+	SelEraseLnLeft  = 1
+	SelEraseLnAll   = 2
+
+	RstTitleModeSetLabelsHex  = 0
+	RstTitleModeQryLabelsHex  = 1
+	RstTitleModeSetLabelsUTF8 = 2
+	RstTitleModeQryLabelsUTF8 = 3
+)
+
 // CSI represents a Control Sequence Introducer function as supported
 // by xterm-compatible terminals.
 //
@@ -22,6 +47,24 @@ const (
 	CurDown
 	CurFwd
 	CurBwd
+	CurNextLn
+	CurPrevLn
+	CurColAbs
+	CurPos
+	CurFwdTab
+	EraseScr
+	SelEraseScr
+	EraseLn
+	SelEraseLn
+	InsLn
+	DelLn
+	DelCh
+	ScrlUp
+	_ // TODO: Set or request graphics attribute
+	ScrlDown
+	_ // TODO: Initiate highlight mouse tracking
+	RstTitleMode
+	EraseCh
 )
 
 var (
@@ -30,23 +73,57 @@ var (
 	// The CSI "Ps" (single number) parameter is encoded as "\x01" and the "Pm"
 	// (multiple numbers separated by ;) is encoded as "\x02".
 
-	insCh   = []byte("\x1b[\x01@")
-	shLeft  = []byte("\x1b[\x01 @")
-	curUp   = []byte("\x1b[\x01A")
-	shRight = []byte("\x1b[\x01 A")
-	curDown = []byte("\x1b[\x01B")
-	curFwd  = []byte("\x1b[\x01C")
-	curBwd  = []byte("\x1b[\x01D")
+	insCh        = []byte("\x1b[\x01@")
+	shLeft       = []byte("\x1b[\x01 @")
+	curUp        = []byte("\x1b[\x01A")
+	shRight      = []byte("\x1b[\x01 A")
+	curDown      = []byte("\x1b[\x01B")
+	curFwd       = []byte("\x1b[\x01C")
+	curBwd       = []byte("\x1b[\x01D")
+	curNextLn    = []byte("\x1b[\x01E")
+	curPrevLn    = []byte("\x1b[\x01F")
+	curColAbs    = []byte("\x1b[\x01G")
+	curPos       = []byte("\x1b[\x01;\x01H")
+	curFwdTab    = []byte("\x1b[\x01I")
+	eraseScr     = []byte("\x1b[\x01J")
+	selEraseScr  = []byte("\x1b[?\x01J")
+	eraseLn      = []byte("\x1b[\x01K")
+	selEraseLn   = []byte("\x1b[?\x01K")
+	insLn        = []byte("\x1b[\x01L")
+	delLn        = []byte("\x1b[\x01M")
+	delCh        = []byte("\x1b[\x01P")
+	scrlUp       = []byte("\x1b[\x01S")
+	scrlDown     = []byte("\x1b[\x01T")
+	rstTitleMode = []byte("\x1b[>\x02T")
+	eraseCh      = []byte("\x1b[\x01X")
 )
 
 var csiSeqs = [...][]byte{
-	InsCh:   insCh,
-	ShLeft:  shLeft,
-	CurUp:   curUp,
-	ShRight: shRight,
-	CurDown: curDown,
-	CurFwd:  curFwd,
-	CurBwd:  curBwd,
+	InsCh:       insCh,
+	ShLeft:      shLeft,
+	CurUp:       curUp,
+	ShRight:     shRight,
+	CurDown:     curDown,
+	CurFwd:      curFwd,
+	CurBwd:      curBwd,
+	CurNextLn:   curNextLn,
+	CurPrevLn:   curPrevLn,
+	CurColAbs:   curColAbs,
+	CurPos:      curPos,
+	CurFwdTab:   curFwdTab,
+	EraseScr:    eraseScr,
+	SelEraseScr: selEraseScr,
+	EraseLn:     eraseLn,
+	SelEraseLn:  selEraseLn,
+	InsLn:       insLn,
+	DelLn:       delLn,
+	DelCh:       delCh,
+	ScrlUp:      scrlUp,
+
+	ScrlDown: scrlDown,
+
+	RstTitleMode: rstTitleMode,
+	EraseCh:      eraseCh,
 }
 
 // Func returns the sequence of bytes to execute this CSI function with
@@ -105,6 +182,7 @@ func appendFunc(buf, seq []byte, args []int) []byte {
 			buf = append(buf, seq[start:]...)
 			break
 		}
+		ix += start
 		buf = append(buf, seq[start:ix]...)
 		start = ix + 1
 		if len(args) > 0 {

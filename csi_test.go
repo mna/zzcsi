@@ -20,6 +20,10 @@ func TestFunc_NoArg(t *testing.T) {
 
 func TestIsCSI(t *testing.T) {
 	for _, seq := range csiSeqs {
+		if len(seq) == 0 {
+			continue
+		}
+
 		t.Run(string(seq), func(t *testing.T) {
 			if !IsCSI(seq) {
 				t.Fatalf("sequence not detected as CSI: %q", seq)

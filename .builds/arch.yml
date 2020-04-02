@@ -1,0 +1,34 @@
+image: archlinux
+packages:
+  - go
+
+sources:
+  - git@git.sr.ht:~mna/zztermcsi
+
+environment:
+  GO111MODULE: "on"
+
+tasks:
+  - setup: |
+      cd zztermcsi
+      go version
+      curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b . v1.24.0
+      ./golangci-lint --version
+
+  - test: |
+      cd zztermcsi
+      go test -v -vet all -bench . -benchmem ./...
+
+  - cover: |
+      cd zztermcsi
+      go test -cover ./...
+
+  - lint: |
+      cd zztermcsi
+      ./golangci-lint run
+
+triggers:
+  - condition: "failure"
+    action: "email"
+    to: "Martin Angers <martin.n.angers+sourcehut@gmail.com>"
+
