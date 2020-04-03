@@ -88,3 +88,30 @@ func TestIsCSI(t *testing.T) {
 		})
 	}
 }
+
+var (
+	BenchmarkResultString string
+	BenchmarkResultBytes  []byte
+)
+
+func BenchmarkCSI(b *testing.B) {
+	b.Run("Func", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			BenchmarkResultBytes = ChLnCol.Func(12, 80)
+		}
+	})
+
+	b.Run("FuncString", func(b *testing.B) {
+		for i := 0; i < b.N; i++ {
+			BenchmarkResultString = ChLnCol.FuncString(12, 80)
+		}
+	})
+
+	b.Run("AppendFunc", func(b *testing.B) {
+		buf := make([]byte, 0, 8)
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			BenchmarkResultBytes = ChLnCol.AppendFunc(buf, 12, 80)
+		}
+	})
+}
