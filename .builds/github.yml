@@ -1,10 +1,10 @@
 image: alpine/latest
 sources:
-  - git@git.sr.ht:~mna/zztermcsi
+  - git@git.sr.ht:~mna/zzcsi
 tasks:
   - build: |
-      cd zztermcsi
-      git remote add mirror git@github.com:mna/zztermcsi.git
+      cd zzcsi
+      git remote add mirror git@github.com:mna/zzcsi.git
       git push mirror master --tag
 secrets:
   - 8a632639-cb32-49f8-b6b8-8040972f80a7
