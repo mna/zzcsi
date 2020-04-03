@@ -1,10 +1,10 @@
-# zztermcsi [![builds.sr.ht status](https://builds.sr.ht/~mna/zztermcsi.svg)](https://builds.sr.ht/~mna/zztermcsi?) [![GoDoc](https://godoc.org/git.sr.ht/~mna/zztermcsi?status.svg)](http://godoc.org/git.sr.ht/~mna/zztermcsi) [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/git.sr.ht/~mna/zztermcsi)
+# zzcsi [![builds.sr.ht status](https://builds.sr.ht/~mna/zzcsi.svg)](https://builds.sr.ht/~mna/zzcsi?) [![GoDoc](https://godoc.org/git.sr.ht/~mna/zzcsi?status.svg)](http://godoc.org/git.sr.ht/~mna/zzcsi) [![go.dev reference](https://img.shields.io/badge/go.dev-reference-007d9c?logo=go&logoColor=white&style=flat-square)](https://pkg.go.dev/git.sr.ht/~mna/zzcsi)
 
-* Canonical repository: https://git.sr.ht/~mna/zztermcsi
-* Issues: https://todo.sr.ht/~mna/zztermcsi
-* Builds: https://builds.sr.ht/~mna/zztermcsi
+* Canonical repository: https://git.sr.ht/~mna/zzcsi
+* Issues: https://todo.sr.ht/~mna/zzcsi
+* Builds: https://builds.sr.ht/~mna/zzcsi
 
-Package zztermcsi implements the Control Sequence Introducer (CSI) functions
+Package zzcsi implements the Control Sequence Introducer (CSI) functions
 supported by Xterm-compatible terminals. The most commonly used functions are
 to erase a line or the screen, manipulate the cursor or set the display
 attributes such as foreground and background colors, bold or italics, but many
@@ -35,7 +35,7 @@ BenchmarkCSI/AppendFunc-4   20808049    58.40 ns/op        0 B/op   0 allocs/op
 The [BSD 3-Clause license][bsd].
 
 [bsd]: http://opensource.org/licenses/BSD-3-Clause
-[godoc]: http://godoc.org/git.sr.ht/~mna/zztermcsi
-[pgd]: https://pkg.go.dev/git.sr.ht/~mna/zztermcsi
+[godoc]: http://godoc.org/git.sr.ht/~mna/zzcsi
+[pgd]: https://pkg.go.dev/git.sr.ht/~mna/zzcsi
 [xterm]: https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Functions-using-CSI-_-ordered-by-the-final-character_s_
-[zzt]: https://git.sr.ht/~mna/?search=zzterm
+[zzt]: https://git.sr.ht/~mna/?search=zz

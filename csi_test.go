@@ -1,4 +1,4 @@
-package zztermcsi
+package zzcsi
 
 import (
 	"strings"

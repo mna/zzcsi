@@ -1,4 +1,4 @@
-// Package zztermcsi implements functions for the execution of Control Sequence
+// Package zzcsi implements functions for the execution of Control Sequence
 // Introducer (CSI) sequences on xterm-compatible terminals. The complete
 // documentation of CSI functions is available at [1].
 //
@@ -15,4 +15,4 @@
 //
 //     [1]: https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Functions-using-CSI-_-ordered-by-the-final-character_s_
 //
-package zztermcsi // import "git.sr.ht/~mna/zztermcsi"
+package zzcsi // import "git.sr.ht/~mna/zzcsi"
