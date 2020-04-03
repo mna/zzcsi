@@ -38,4 +38,4 @@ The [BSD 3-Clause license][bsd].
 [godoc]: http://godoc.org/git.sr.ht/~mna/zztermcsi
 [pgd]: https://pkg.go.dev/git.sr.ht/~mna/zztermcsi
 [xterm]: https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Functions-using-CSI-_-ordered-by-the-final-character_s_
-[zzt]: https://git.sr.ht/~mna/zzterm
+[zzt]: https://git.sr.ht/~mna/?search=zzterm
