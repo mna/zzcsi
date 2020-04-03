@@ -38,7 +38,69 @@ const (
 	SetModeSendRecv   = 12
 	SetModeAutoNewln  = 20
 
-	// TODO: SetPrvMode constants
+	SetPrvModeAppCurKeys       = 1
+	SetPrvModeUSASCIIChSet     = 2
+	SetPrvMode132Cols          = 3
+	SetPrvModeSmoothScrl       = 4
+	SetPrvModeRevVid           = 5
+	SetPrvModeOrig             = 6
+	SetPrvModeAutoWrap         = 7
+	SetPrvModeAutoRep          = 8
+	SetPrvModeX10Mous          = 9
+	SetPrvModeToolbar          = 10
+	SetPrvModeBlinkATT         = 12
+	SetPrvModeBlink            = 13
+	SetPrvModeXORBlink         = 14
+	SetPrvModePrnFF            = 18
+	SetPrvModePrnExtFullScr    = 19
+	SetPrvModeShowCur          = 25
+	SetPrvModeShowScrlbar      = 30
+	SetPrvModeFontShFn         = 35
+	SetPrvModeTektronix        = 38
+	SetPrvModeAllow80_132      = 40
+	SetPrvModeMoreFix          = 41
+	SetPrvModeNatlReplChSet    = 42
+	SetPrvModeMargBl           = 44
+	SetPrvModeRevWrap          = 45
+	SetPrvModeLog              = 46
+	SetPrvModeAltScrBuf        = 47
+	SetPrvModeAppKeypad        = 66
+	SetPrvModeBackArwBksp      = 67
+	SetPrvModeLeftRightMarg    = 69
+	SetPrvModeSixelScrl        = 80
+	SetPrvModeNoClrScr         = 95
+	SetPrvModeX11MousBtn       = 1000
+	SetPrvModeX11MousHilite    = 1001
+	SetPrvModeX11MousCell      = 1002
+	SetPrvModeX11MousAll       = 1003
+	SetPrvModeFocus            = 1004
+	SetPrvModeUTF8Mous         = 1005
+	SetPrvModeSGRMous          = 1006
+	SetPrvModeAltScrl          = 1007
+	SetPrvModeScrlBotOnOut     = 1010
+	SetPrvModeScrlBotOnKey     = 1011
+	SetPrvModeURXVTMous        = 1015
+	SetPrvModeMetaKey          = 1034
+	SetPrvModeAltNumLock       = 1035
+	SetPrvModeESCOnMeta        = 1036
+	SetPrvModeDELKeypad        = 1037
+	SetPrvModeESCOnAlt         = 1039
+	SetPrvModeKeepSel          = 1040
+	SetPrvModeUseClipbSel      = 1041
+	SetPrvModeBlUrg            = 1042
+	SetPrvModePopOnBl          = 1043
+	SetPrvModeReuseClipb       = 1044
+	SetPrvModeSwitchAltScrBuf  = 1046
+	SetPrvModeUseAltScrBuf     = 1047
+	SetPrvModeSaveCur          = 1048
+	SetPrvModeSaveCurAltScrBuf = 1049
+	SetPrvModeTinfoTcap        = 1050
+	SetPrvModeSun              = 1051
+	SetPrvModeHP               = 1052
+	SetPrvModeSCO              = 1053
+	SetPrvModeLegacyKeyb       = 1060
+	SetPrvModeVT220Keyb        = 1061
+	SetPrvModeBrackPaste       = 2004
 
 	MediaCopyPrnScr      = 0
 	MediaCopyPrnContrOff = 4
@@ -57,9 +119,120 @@ const (
 	RstModeSendRecv   = 12
 	RstModeNormNewln  = 20
 
-	// TODO: RstPrvMode constants
+	RstPrvModeNormCurKeys          = 1
+	RstPrvModeVT52                 = 2
+	RstPrvMode80Cols               = 3
+	RstPrvModeJumpScrl             = 4
+	RstPrvModeNormVid              = 5
+	RstPrvModeNormCur              = 6
+	RstPrvModeNoAutoWrap           = 7
+	RstPrvModeNoAutoRep            = 8
+	RstPrvModeNoX10Mous            = 9
+	RstPrvModeNoToolbar            = 10
+	RstPrvModeNoBlinkATT           = 12
+	RstPrvModeNoBlink              = 13
+	RstPrvModeNoXORBlink           = 14
+	RstPrvModeNoPrnFF              = 18
+	RstPrvModePrnScrlRegion        = 19
+	RstPrvModeHideCur              = 25
+	RstPrvModeHideScrlbar          = 30
+	RstPrvModeNoFontShFn           = 35
+	RstPrvModeDisallow80_132       = 40
+	RstPrvModeNoMoreFix            = 41
+	RstPrvModeNoNatlReplChSet      = 42
+	RstPrvModeNoMargBl             = 44
+	RstPrvModeNoRevWrap            = 45
+	RstPrvModeNoLog                = 46
+	RstPrvModeNormScrBuf           = 47
+	RstPrvModeNumKeypad            = 66
+	RstPrvModeBackArwDel           = 67
+	RstPrvModeNoLeftRightMarg      = 69
+	RstPrvModeNoSixelScrl          = 80
+	RstPrvModeClrScr               = 95
+	RstPrvModeNoX11MousBtn         = 1000
+	RstPrvModeNoX11MousHilite      = 1001
+	RstPrvModeNoX11MousCell        = 1002
+	RstPrvModeNoX11MousAll         = 1003
+	RstPrvModeNoFocus              = 1004
+	RstPrvModeNoUTF8Mous           = 1005
+	RstPrvModeNoSGRMous            = 1006
+	RstPrvModeNoAltScrl            = 1007
+	RstPrvModeNoScrlBotOnOut       = 1010
+	RstPrvModeNoScrlBotOnKey       = 1011
+	RstPrvModeNoURXVTMous          = 1015
+	RstPrvModeNoMetaKey            = 1034
+	RstPrvModeNoAltNumLock         = 1035
+	RstPrvModeNoESCOnMeta          = 1036
+	RstPrvModeVT220RemKeypad       = 1037
+	RstPrvModeNoESCOnAlt           = 1039
+	RstPrvModeNoKeepSel            = 1040
+	RstPrvModeUsePriSel            = 1041
+	RstPrvModeNoBlUrg              = 1042
+	RstPrvModeNoPopOnBl            = 1043
+	RstPrvModeNoSwitchAltScrBuf    = 1046
+	RstPrvModeUseNormScrBuf        = 1047
+	RstPrvModeRestoreCur           = 1048
+	RstPrvModeRestoreCurNormScrBuf = 1049
+	RstPrvModeTinfoTcap            = 1050
+	RstPrvModeSun                  = 1051
+	RstPrvModeHP                   = 1052
+	RstPrvModeSCO                  = 1053
+	RstPrvModeLegacyKeyb           = 1060
+	RstPrvModeSunPCKeyb            = 1061
+	RstPrvModeBrackPaste           = 2004
 
-	// TODO: ChAttr constants
+	ChAttrNorm             = 0
+	ChAttrBold             = 1
+	ChAttrDim              = 2
+	ChAttrItalics          = 3
+	ChAttrUnderline        = 4
+	ChAttrBlink            = 5
+	ChAttrInverse          = 7
+	ChAttrHidden           = 8
+	ChAttrCrossed          = 9
+	ChAttrDoubleUnderline  = 21
+	ChAttrNoBoldDim        = 22
+	ChAttrNoItalics        = 23
+	ChAttrNoUnderline      = 24
+	ChAttrNoBlink          = 25
+	ChAttrNoInverse        = 27
+	ChAttrNoHidden         = 28
+	ChAttrNoCrossed        = 29
+	ChAttrFgBlack          = 30
+	ChAttrFgRed            = 31
+	ChAttrFgGreen          = 32
+	ChAttrFgYellow         = 33
+	ChAttrFgBlue           = 34
+	ChAttrFgMagenta        = 35
+	ChAttrFgCyan           = 36
+	ChAttrFgWhite          = 37
+	ChAttrFgDef            = 39
+	ChAttrBgBlack          = 40
+	ChAttrBgRed            = 41
+	ChAttrBgGreen          = 42
+	ChAttrBgYellow         = 43
+	ChAttrBgBlue           = 44
+	ChAttrBgMagenta        = 45
+	ChAttrBgCyan           = 46
+	ChAttrBgWhite          = 47
+	ChAttrBgDef            = 49
+	ChAttrFgBlackBright    = 90
+	ChAttrFgRedBright      = 91
+	ChAttrFgGreenBright    = 92
+	ChAttrFgYellowBright   = 93
+	ChAttrFgBlueBright     = 94
+	ChAttrFgMagentaBright  = 95
+	ChAttrFgCyanBright     = 96
+	ChAttrFgWhiteBright    = 97
+	ChAttrBgBlackBright    = 100
+	ChAttrBgRedBright      = 101
+	ChAttrBgGreenBright    = 102
+	ChAttrBgYellowBright   = 103
+	ChAttrBgBlueBright     = 104
+	ChAttrBgMagentaBright  = 105
+	ChAttrBgCyanBright     = 106
+	ChAttrBgWhiteBright    = 107
+	ChAttrNo16ColorFgBgDef = 100
 
 	SetKeyModKeyb      = 0
 	SetKeyModCurKeys   = 1
@@ -70,6 +243,30 @@ const (
 	RstKeyModCurKeys   = 1
 	RstKeyModFnKeys    = 2
 	RstKeyModOtherKeys = 4
+
+	DevStatReport = 5
+	DevStatCurPos = 6
+
+	DisKeyModKeyb      = 0
+	DisKeyModCurKeys   = 1
+	DisKeyModFnKeys    = 2
+	DisKeyModOtherKeys = 4
+
+	DevStatDECCurPos         = 6
+	DevStatDECPrn            = 15
+	DevStatDECUDK            = 25
+	DevStatDECKeyb           = 26
+	DevStatDECLocator        = 53
+	DevStatDECLocatorType    = 56
+	DevStatDECMacroSpc       = 62
+	DevStatDECMemChecksum    = 63
+	DevStatDECDataIntegrity  = 75
+	DevStatDECMultiSsnConfig = 85
+
+	PtrModeNeverHide             = 0
+	PtrModeHideIfNoMousTrack     = 1
+	PtrModeAlwaysHideExceptLeave = 2
+	PtrModeAlwaysHide            = 3
 )
 
 // CSI represents a Control Sequence Introducer function as supported
@@ -124,8 +321,19 @@ const (
 	RstMode
 	RstPrvMode
 	ChAttr
+	ChAttrFgIRGB
+	ChAttrBgIRGB
+	ChAttrFgIx
+	ChAttrBgIx
+	ChAttrFgRGB
+	ChAttrBgRGB
 	SetKeyMod
 	RstKeyMod
+	DevStat
+	DisKeyMod
+	DevStatDEC
+	PtrMode
+	SoftRst
 )
 
 var (
@@ -175,8 +383,19 @@ var (
 	rstMode      = []byte("\x1b[\x02l")
 	rstPrvMode   = []byte("\x1b[?\x02l")
 	chAttr       = []byte("\x1b[\x02m")
+	chAttrFgIRGB = []byte("\x1b[38;2;\x01;\x01;\x01;\x01m")
+	chAttrBgIRGB = []byte("\x1b[48;2;\x01;\x01;\x01;\x01m")
+	chAttrFgIx   = []byte("\x1b[38;5;\x01m")
+	chAttrBgIx   = []byte("\x1b[48;5;\x01m")
+	chAttrFgRGB  = []byte("\x1b[38;2;\x01;\x01;\x01m")
+	chAttrBgRGB  = []byte("\x1b[48;2;\x01;\x01;\x01m")
 	setKeyMod    = []byte("\x1b[>\x01;\x01m")
 	rstKeyMod    = []byte("\x1b[>\x01m")
+	devStat      = []byte("\x1b[\x01n")
+	disKeyMod    = []byte("\x1b[>\x02n")
+	devStatDEC   = []byte("\x1b[?\x01n")
+	ptrMode      = []byte("\x1b[>\x01p")
+	softRst      = []byte("\x1b[!p")
 )
 
 var csiSeqs = [...][]byte{
@@ -223,8 +442,19 @@ var csiSeqs = [...][]byte{
 	RstMode:      rstMode,
 	RstPrvMode:   rstPrvMode,
 	ChAttr:       chAttr,
+	ChAttrFgIRGB: chAttrFgIRGB,
+	ChAttrBgIRGB: chAttrBgIRGB,
+	ChAttrFgIx:   chAttrFgIx,
+	ChAttrBgIx:   chAttrBgIx,
+	ChAttrFgRGB:  chAttrFgRGB,
+	ChAttrBgRGB:  chAttrBgRGB,
 	SetKeyMod:    setKeyMod,
 	RstKeyMod:    rstKeyMod,
+	DevStat:      devStat,
+	DisKeyMod:    disKeyMod,
+	DevStatDEC:   devStatDEC,
+	PtrMode:      ptrMode,
+	SoftRst:      softRst,
 }
 
 // Func returns the sequence of bytes to execute this CSI function with
