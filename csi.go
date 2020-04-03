@@ -26,6 +26,14 @@ const (
 	SelEraseLnLeft  = 1
 	SelEraseLnAll   = 2
 
+	GraphicsAttrItemNumColorRegs = 1
+	GraphicsAttrItemSixelPx      = 2
+	GraphicsAttrItemReGISPx      = 3
+	GraphicsAttrActionRead       = 1
+	GraphicsAttrActionRst        = 2
+	GraphicsAttrActionSet        = 3
+	GraphicsAttrActionReadMax    = 4
+
 	RstTitleModeSetLabelsHex  = 0
 	RstTitleModeQryLabelsHex  = 1
 	RstTitleModeSetLabelsUTF8 = 2
@@ -337,6 +345,35 @@ const (
 	SelChecksumOmitUninitCells      = 3
 	SelChecksumNoMaskCell8          = 4
 	SelChecksumNoMaskCell7          = 5
+
+	LocatorRptOff     = 0
+	LocatorRptOn      = 1
+	LocatorRptOnce    = 2
+	LocatorRptUnitDef = 0
+	LocatorRptUnitPx  = 1
+	LocatorRptUnitCh  = 2
+
+	SelLocatorEvtsExplicit  = 0
+	SelLocatorEvtsBtnDown   = 1
+	SelLocatorEvtsNoBtnDown = 2
+	SelLocatorEvtsBtnUp     = 3
+	SelLocatorEvtsNoBtnUp   = 4
+
+	PushVidAttrBold            = 1
+	PushVidAttrDim             = 2
+	PushVidAttrItalics         = 3
+	PushVidAttrUnderline       = 4
+	PushVidAttrBlink           = 5
+	PushVidAttrInverse         = 7
+	PushVidAttrHidden          = 8
+	PushVidAttrCrossed         = 9
+	PushVidAttrFgColor         = 10
+	PushVidAttrBgColor         = 11
+	PushVidAttrDoubleUnderline = 21
+
+	ColsPerPgDef = 0
+	ColsPerPg80  = 80
+	ColsPerPg132 = 132
 )
 
 // CSI represents a Control Sequence Introducer function as supported
@@ -345,6 +382,7 @@ const (
 // See [1] for details.
 //
 //     [1]: https://invisible-island.net/xterm/ctlseqs/ctlseqs.html#h3-Functions-using-CSI-_-ordered-by-the-final-character_s_
+//
 type CSI byte
 
 // List of CSI functions.
@@ -369,9 +407,10 @@ const (
 	DelLn
 	DelCh
 	ScrlUp
-	_ // TODO: Set or request graphics attribute
+	GraphicsAttr
+	GraphicsAttr2Vals
 	ScrlDown
-	_ // TODO: Initiate highlight mouse tracking
+	InitHiliteMous
 	RstTitleMode
 	EraseCh
 	CurBwdTab
@@ -408,7 +447,7 @@ const (
 	SetConfLvl
 	ANSIMode
 	DECPrvMode
-	PushVidAttr
+	PushVidAttrAlias
 	LdLEDs
 	SetCurStyle
 	ChProtAttr
@@ -433,7 +472,14 @@ const (
 	FillRect
 	SelChecksum
 	ChecksumRect
-
+	LocatorRpt
+	EraseRect
+	SelLocatorEvts
+	PushVidAttr
+	SelEraseRect
+	RptSGR
+	ColsPerPg
+	LocatorPos
 	LnsPerScr
 	PopVidAttr
 	InsCol
@@ -446,185 +492,203 @@ var (
 	// The CSI "Ps" (single number) parameter is encoded as "\x01" and the "Pm"
 	// (multiple numbers separated by ;) is encoded as "\x02".
 
-	insCh           = []byte("\x1b[\x01@")
-	shLeft          = []byte("\x1b[\x01 @")
-	curUp           = []byte("\x1b[\x01A")
-	shRight         = []byte("\x1b[\x01 A")
-	curDown         = []byte("\x1b[\x01B")
-	curFwd          = []byte("\x1b[\x01C")
-	curBwd          = []byte("\x1b[\x01D")
-	curNextLn       = []byte("\x1b[\x01E")
-	curPrevLn       = []byte("\x1b[\x01F")
-	curColAbs       = []byte("\x1b[\x01G")
-	curPos          = []byte("\x1b[\x01;\x01H")
-	curFwdTab       = []byte("\x1b[\x01I")
-	eraseScr        = []byte("\x1b[\x01J")
-	selEraseScr     = []byte("\x1b[?\x01J")
-	eraseLn         = []byte("\x1b[\x01K")
-	selEraseLn      = []byte("\x1b[?\x01K")
-	insLn           = []byte("\x1b[\x01L")
-	delLn           = []byte("\x1b[\x01M")
-	delCh           = []byte("\x1b[\x01P")
-	scrlUp          = []byte("\x1b[\x01S")
-	scrlDown        = []byte("\x1b[\x01T")
-	rstTitleMode    = []byte("\x1b[>\x02T")
-	eraseCh         = []byte("\x1b[\x01X")
-	curBwdTab       = []byte("\x1b[\x01Z")
-	chColAbs        = []byte("\x1b[\x02`")
-	chColRel        = []byte("\x1b[\x02a")
-	repCh           = []byte("\x1b[\x01b")
-	priDevAttr      = []byte("\x1b[\x01c")
-	terDevAttr      = []byte("\x1b[=\x01c")
-	secDevAttr      = []byte("\x1b[>\x01c")
-	chLnAbs         = []byte("\x1b[\x02d")
-	chLnRel         = []byte("\x1b[\x02e")
-	chLnCol         = []byte("\x1b[\x01;\x01f")
-	tabClr          = []byte("\x1b[\x01g")
-	setMode         = []byte("\x1b[\x02h")
-	setPrvMode      = []byte("\x1b[?\x02h")
-	mediaCopy       = []byte("\x1b[\x02i")
-	mediaCopyDEC    = []byte("\x1b[?\x02i")
-	rstMode         = []byte("\x1b[\x02l")
-	rstPrvMode      = []byte("\x1b[?\x02l")
-	chAttr          = []byte("\x1b[\x02m")
-	chAttrFgIRGB    = []byte("\x1b[38;2;\x01;\x01;\x01;\x01m")
-	chAttrBgIRGB    = []byte("\x1b[48;2;\x01;\x01;\x01;\x01m")
-	chAttrFgIx      = []byte("\x1b[38;5;\x01m")
-	chAttrBgIx      = []byte("\x1b[48;5;\x01m")
-	chAttrFgRGB     = []byte("\x1b[38;2;\x01;\x01;\x01m")
-	chAttrBgRGB     = []byte("\x1b[48;2;\x01;\x01;\x01m")
-	setKeyMod       = []byte("\x1b[>\x01;\x01m")
-	rstKeyMod       = []byte("\x1b[>\x01m")
-	devStat         = []byte("\x1b[\x01n")
-	disKeyMod       = []byte("\x1b[>\x02n")
-	devStatDEC      = []byte("\x1b[?\x01n")
-	ptrMode         = []byte("\x1b[>\x01p")
-	softRst         = []byte("\x1b[!p")
-	setConfLvl      = []byte("\x1b[\x01;\x01\"p")
-	ansiMode        = []byte("\x1b[\x01$p")
-	decPrvMode      = []byte("\x1b[?\x01$p")
-	pushVidAttr     = []byte("\x1b[\x02#p")
-	ldLEDs          = []byte("\x1b[\x01q")
-	setCurStyle     = []byte("\x1b[\x01 q")
-	chProtAttr      = []byte("\x1b[\x01\"q")
-	popVidAttrAlias = []byte("\x1b[#q")
-	setScrlRegn     = []byte("\x1b[\x01;\x01r")
-	rstrDECPrvMode  = []byte("\x1b[?\x02r")
-	setAttrRect     = []byte("\x1b[\x01;\x01;\x01;\x01;\x01$r")
-	saveCur         = []byte("\x1b[s")
-	leftRightMarg   = []byte("\x1b[\x01;\x01s")
-	saveDECPrvMode  = []byte("\x1b[?\x02s")
-	winOps          = []byte("\x1b[\x01;\x01;\x01t")
-	setTitleMode    = []byte("\x1b[>\x02t")
-	setBlVol        = []byte("\x1b[\x01 t")
-	revAttrRect     = []byte("\x1b[\x01;\x01;\x01;\x01;\x01$t")
-	rstrCur         = []byte("\x1b[u")
-	setMargBlVol    = []byte("\x1b[\x01 u")
-	copyRect        = []byte("\x1b[\x01;\x01;\x01;\x01;\x01;\x01;\x01;\x01$v")
-	presStat        = []byte("\x1b[\x01$w")
-	filterRect      = []byte("\x1b[\x01;\x01;\x01;\x01'w")
-	termParams      = []byte("\x1b[\x01x")
-	selAttrChgExt   = []byte("\x1b[\x01*x")
-	fillRect        = []byte("\x1b[\x01;\x01;\x01;\x01;\x01$x")
-	selChecksum     = []byte("\x1b[\x01#y")
-	checksumRect    = []byte("\x1b[\x01;\x01;\x01;\x01;\x01;\x01*y")
-
-	lnsPerScr  = []byte("\x1b[\x01*|")
-	popVidAttr = []byte("\x1b[#}")
-	insCol     = []byte("\x1b[\x02'}")
-	delCol     = []byte("\x1b[\x02'~")
+	insCh             = []byte("\x1b[\x01@")
+	shLeft            = []byte("\x1b[\x01 @")
+	curUp             = []byte("\x1b[\x01A")
+	shRight           = []byte("\x1b[\x01 A")
+	curDown           = []byte("\x1b[\x01B")
+	curFwd            = []byte("\x1b[\x01C")
+	curBwd            = []byte("\x1b[\x01D")
+	curNextLn         = []byte("\x1b[\x01E")
+	curPrevLn         = []byte("\x1b[\x01F")
+	curColAbs         = []byte("\x1b[\x01G")
+	curPos            = []byte("\x1b[\x01;\x01H")
+	curFwdTab         = []byte("\x1b[\x01I")
+	eraseScr          = []byte("\x1b[\x01J")
+	selEraseScr       = []byte("\x1b[?\x01J")
+	eraseLn           = []byte("\x1b[\x01K")
+	selEraseLn        = []byte("\x1b[?\x01K")
+	insLn             = []byte("\x1b[\x01L")
+	delLn             = []byte("\x1b[\x01M")
+	delCh             = []byte("\x1b[\x01P")
+	scrlUp            = []byte("\x1b[\x01S")
+	graphicsAttr      = []byte("\x1b[?\x01;\x01;\x01S")
+	graphicsAttr2Vals = []byte("\x1b[?\x01;\x01;\x01;\x01S")
+	scrlDown          = []byte("\x1b[\x01T")
+	initHiliteMous    = []byte("\x1b[\x01;\x01;\x01;\x01;\x01T")
+	rstTitleMode      = []byte("\x1b[>\x02T")
+	eraseCh           = []byte("\x1b[\x01X")
+	curBwdTab         = []byte("\x1b[\x01Z")
+	chColAbs          = []byte("\x1b[\x02`")
+	chColRel          = []byte("\x1b[\x02a")
+	repCh             = []byte("\x1b[\x01b")
+	priDevAttr        = []byte("\x1b[\x01c")
+	terDevAttr        = []byte("\x1b[=\x01c")
+	secDevAttr        = []byte("\x1b[>\x01c")
+	chLnAbs           = []byte("\x1b[\x02d")
+	chLnRel           = []byte("\x1b[\x02e")
+	chLnCol           = []byte("\x1b[\x01;\x01f")
+	tabClr            = []byte("\x1b[\x01g")
+	setMode           = []byte("\x1b[\x02h")
+	setPrvMode        = []byte("\x1b[?\x02h")
+	mediaCopy         = []byte("\x1b[\x02i")
+	mediaCopyDEC      = []byte("\x1b[?\x02i")
+	rstMode           = []byte("\x1b[\x02l")
+	rstPrvMode        = []byte("\x1b[?\x02l")
+	chAttr            = []byte("\x1b[\x02m")
+	chAttrFgIRGB      = []byte("\x1b[38;2;\x01;\x01;\x01;\x01m")
+	chAttrBgIRGB      = []byte("\x1b[48;2;\x01;\x01;\x01;\x01m")
+	chAttrFgIx        = []byte("\x1b[38;5;\x01m")
+	chAttrBgIx        = []byte("\x1b[48;5;\x01m")
+	chAttrFgRGB       = []byte("\x1b[38;2;\x01;\x01;\x01m")
+	chAttrBgRGB       = []byte("\x1b[48;2;\x01;\x01;\x01m")
+	setKeyMod         = []byte("\x1b[>\x01;\x01m")
+	rstKeyMod         = []byte("\x1b[>\x01m")
+	devStat           = []byte("\x1b[\x01n")
+	disKeyMod         = []byte("\x1b[>\x02n")
+	devStatDEC        = []byte("\x1b[?\x01n")
+	ptrMode           = []byte("\x1b[>\x01p")
+	softRst           = []byte("\x1b[!p")
+	setConfLvl        = []byte("\x1b[\x01;\x01\"p")
+	ansiMode          = []byte("\x1b[\x01$p")
+	decPrvMode        = []byte("\x1b[?\x01$p")
+	pushVidAttrAlias  = []byte("\x1b[\x02#p")
+	ldLEDs            = []byte("\x1b[\x01q")
+	setCurStyle       = []byte("\x1b[\x01 q")
+	chProtAttr        = []byte("\x1b[\x01\"q")
+	popVidAttrAlias   = []byte("\x1b[#q")
+	setScrlRegn       = []byte("\x1b[\x01;\x01r")
+	rstrDECPrvMode    = []byte("\x1b[?\x02r")
+	setAttrRect       = []byte("\x1b[\x01;\x01;\x01;\x01;\x01$r")
+	saveCur           = []byte("\x1b[s")
+	leftRightMarg     = []byte("\x1b[\x01;\x01s")
+	saveDECPrvMode    = []byte("\x1b[?\x02s")
+	winOps            = []byte("\x1b[\x01;\x01;\x01t")
+	setTitleMode      = []byte("\x1b[>\x02t")
+	setBlVol          = []byte("\x1b[\x01 t")
+	revAttrRect       = []byte("\x1b[\x01;\x01;\x01;\x01;\x01$t")
+	rstrCur           = []byte("\x1b[u")
+	setMargBlVol      = []byte("\x1b[\x01 u")
+	copyRect          = []byte("\x1b[\x01;\x01;\x01;\x01;\x01;\x01;\x01;\x01$v")
+	presStat          = []byte("\x1b[\x01$w")
+	filterRect        = []byte("\x1b[\x01;\x01;\x01;\x01'w")
+	termParams        = []byte("\x1b[\x01x")
+	selAttrChgExt     = []byte("\x1b[\x01*x")
+	fillRect          = []byte("\x1b[\x01;\x01;\x01;\x01;\x01$x")
+	selChecksum       = []byte("\x1b[\x01#y")
+	checksumRect      = []byte("\x1b[\x01;\x01;\x01;\x01;\x01;\x01*y")
+	locatorRpt        = []byte("\x1b[\x01;\x01'z")
+	eraseRect         = []byte("\x1b[\x01;\x01;\x01;\x01$z")
+	selLocatorEvts    = []byte("\x1b[\x02'")
+	pushVidAttr       = []byte("\x1b[\x02#{")
+	selEraseRect      = []byte("\x1b[\x01;\x01;\x01;\x01${")
+	rptSGR            = []byte("\x1b[\x01;\x01;\x01;\x01#|")
+	colsPerPg         = []byte("\x1b[\x01$|")
+	locatorPos        = []byte("\x1b[\x01'|")
+	lnsPerScr         = []byte("\x1b[\x01*|")
+	popVidAttr        = []byte("\x1b[#}")
+	insCol            = []byte("\x1b[\x02'}")
+	delCol            = []byte("\x1b[\x02'~")
 )
 
 var csiSeqs = [...][]byte{
-	InsCh:       insCh,
-	ShLeft:      shLeft,
-	CurUp:       curUp,
-	ShRight:     shRight,
-	CurDown:     curDown,
-	CurFwd:      curFwd,
-	CurBwd:      curBwd,
-	CurNextLn:   curNextLn,
-	CurPrevLn:   curPrevLn,
-	CurColAbs:   curColAbs,
-	CurPos:      curPos,
-	CurFwdTab:   curFwdTab,
-	EraseScr:    eraseScr,
-	SelEraseScr: selEraseScr,
-	EraseLn:     eraseLn,
-	SelEraseLn:  selEraseLn,
-	InsLn:       insLn,
-	DelLn:       delLn,
-	DelCh:       delCh,
-	ScrlUp:      scrlUp,
-
-	ScrlDown: scrlDown,
-
-	RstTitleMode:    rstTitleMode,
-	EraseCh:         eraseCh,
-	CurBwdTab:       curBwdTab,
-	ChColAbs:        chColAbs,
-	ChColRel:        chColRel,
-	RepCh:           repCh,
-	PriDevAttr:      priDevAttr,
-	TerDevAttr:      terDevAttr,
-	SecDevAttr:      secDevAttr,
-	ChLnAbs:         chLnAbs,
-	ChLnRel:         chLnRel,
-	ChLnCol:         chLnCol,
-	TabClr:          tabClr,
-	SetMode:         setMode,
-	SetPrvMode:      setPrvMode,
-	MediaCopy:       mediaCopy,
-	MediaCopyDEC:    mediaCopyDEC,
-	RstMode:         rstMode,
-	RstPrvMode:      rstPrvMode,
-	ChAttr:          chAttr,
-	ChAttrFgIRGB:    chAttrFgIRGB,
-	ChAttrBgIRGB:    chAttrBgIRGB,
-	ChAttrFgIx:      chAttrFgIx,
-	ChAttrBgIx:      chAttrBgIx,
-	ChAttrFgRGB:     chAttrFgRGB,
-	ChAttrBgRGB:     chAttrBgRGB,
-	SetKeyMod:       setKeyMod,
-	RstKeyMod:       rstKeyMod,
-	DevStat:         devStat,
-	DisKeyMod:       disKeyMod,
-	DevStatDEC:      devStatDEC,
-	PtrMode:         ptrMode,
-	SoftRst:         softRst,
-	SetConfLvl:      setConfLvl,
-	ANSIMode:        ansiMode,
-	DECPrvMode:      decPrvMode,
-	PushVidAttr:     pushVidAttr,
-	LdLEDs:          ldLEDs,
-	SetCurStyle:     setCurStyle,
-	ChProtAttr:      chProtAttr,
-	PopVidAttrAlias: popVidAttrAlias,
-	SetScrlRegn:     setScrlRegn,
-	RstrDECPrvMode:  rstrDECPrvMode,
-	SetAttrRect:     setAttrRect,
-	SaveCur:         saveCur,
-	LeftRightMarg:   leftRightMarg,
-	SaveDECPrvMode:  saveDECPrvMode,
-	WinOps:          winOps,
-	SetTitleMode:    setTitleMode,
-	SetBlVol:        setBlVol,
-	RevAttrRect:     revAttrRect,
-	RstrCur:         rstrCur,
-	SetMargBlVol:    setMargBlVol,
-	CopyRect:        copyRect,
-	PresStat:        presStat,
-	FilterRect:      filterRect,
-	TermParams:      termParams,
-	SelAttrChgExt:   selAttrChgExt,
-	FillRect:        fillRect,
-	SelChecksum:     selChecksum,
-	ChecksumRect:    checksumRect,
-
-	LnsPerScr:  lnsPerScr,
-	PopVidAttr: popVidAttr,
-	InsCol:     insCol,
-	DelCol:     delCol,
+	InsCh:             insCh,
+	ShLeft:            shLeft,
+	CurUp:             curUp,
+	ShRight:           shRight,
+	CurDown:           curDown,
+	CurFwd:            curFwd,
+	CurBwd:            curBwd,
+	CurNextLn:         curNextLn,
+	CurPrevLn:         curPrevLn,
+	CurColAbs:         curColAbs,
+	CurPos:            curPos,
+	CurFwdTab:         curFwdTab,
+	EraseScr:          eraseScr,
+	SelEraseScr:       selEraseScr,
+	EraseLn:           eraseLn,
+	SelEraseLn:        selEraseLn,
+	InsLn:             insLn,
+	DelLn:             delLn,
+	DelCh:             delCh,
+	ScrlUp:            scrlUp,
+	GraphicsAttr:      graphicsAttr,
+	GraphicsAttr2Vals: graphicsAttr2Vals,
+	ScrlDown:          scrlDown,
+	InitHiliteMous:    initHiliteMous,
+	RstTitleMode:      rstTitleMode,
+	EraseCh:           eraseCh,
+	CurBwdTab:         curBwdTab,
+	ChColAbs:          chColAbs,
+	ChColRel:          chColRel,
+	RepCh:             repCh,
+	PriDevAttr:        priDevAttr,
+	TerDevAttr:        terDevAttr,
+	SecDevAttr:        secDevAttr,
+	ChLnAbs:           chLnAbs,
+	ChLnRel:           chLnRel,
+	ChLnCol:           chLnCol,
+	TabClr:            tabClr,
+	SetMode:           setMode,
+	SetPrvMode:        setPrvMode,
+	MediaCopy:         mediaCopy,
+	MediaCopyDEC:      mediaCopyDEC,
+	RstMode:           rstMode,
+	RstPrvMode:        rstPrvMode,
+	ChAttr:            chAttr,
+	ChAttrFgIRGB:      chAttrFgIRGB,
+	ChAttrBgIRGB:      chAttrBgIRGB,
+	ChAttrFgIx:        chAttrFgIx,
+	ChAttrBgIx:        chAttrBgIx,
+	ChAttrFgRGB:       chAttrFgRGB,
+	ChAttrBgRGB:       chAttrBgRGB,
+	SetKeyMod:         setKeyMod,
+	RstKeyMod:         rstKeyMod,
+	DevStat:           devStat,
+	DisKeyMod:         disKeyMod,
+	DevStatDEC:        devStatDEC,
+	PtrMode:           ptrMode,
+	SoftRst:           softRst,
+	SetConfLvl:        setConfLvl,
+	ANSIMode:          ansiMode,
+	DECPrvMode:        decPrvMode,
+	PushVidAttrAlias:  pushVidAttrAlias,
+	LdLEDs:            ldLEDs,
+	SetCurStyle:       setCurStyle,
+	ChProtAttr:        chProtAttr,
+	PopVidAttrAlias:   popVidAttrAlias,
+	SetScrlRegn:       setScrlRegn,
+	RstrDECPrvMode:    rstrDECPrvMode,
+	SetAttrRect:       setAttrRect,
+	SaveCur:           saveCur,
+	LeftRightMarg:     leftRightMarg,
+	SaveDECPrvMode:    saveDECPrvMode,
+	WinOps:            winOps,
+	SetTitleMode:      setTitleMode,
+	SetBlVol:          setBlVol,
+	RevAttrRect:       revAttrRect,
+	RstrCur:           rstrCur,
+	SetMargBlVol:      setMargBlVol,
+	CopyRect:          copyRect,
+	PresStat:          presStat,
+	FilterRect:        filterRect,
+	TermParams:        termParams,
+	SelAttrChgExt:     selAttrChgExt,
+	FillRect:          fillRect,
+	SelChecksum:       selChecksum,
+	ChecksumRect:      checksumRect,
+	LocatorRpt:        locatorRpt,
+	EraseRect:         eraseRect,
+	SelLocatorEvts:    selLocatorEvts,
+	PushVidAttr:       pushVidAttr,
+	SelEraseRect:      selEraseRect,
+	RptSGR:            rptSGR,
+	ColsPerPg:         colsPerPg,
+	LocatorPos:        locatorPos,
+	LnsPerScr:         lnsPerScr,
+	PopVidAttr:        popVidAttr,
+	InsCol:            insCol,
+	DelCol:            delCol,
 }
 
 // Func returns the sequence of bytes to execute this CSI function with
