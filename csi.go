@@ -758,6 +758,66 @@ func appendFunc(buf, seq []byte, args []int) []byte {
 	return buf
 }
 
+// DecodeArgs decodes the numerical arguments of an escape sequence into the
+// integer points provided in dst. It returns the number of arguments decoded,
+// which is <= len(dst). It starts decoding arguments at the first byte that
+// is a decimal digit, and continues decoding numbers as long as they are
+// separated by semicolons.
+//
+// This is useful for some csi functions that trigger a reply from the terminal.
+// Such a reply can be read e.g. with git.sr.ht/~mna/zzterm (which would read it
+// as a key of type KeyESCSeq, and then the Input.Bytes can be passed as b to
+// this function to get the arguments). A common example of such a reply is for
+// the DevStat CSI function when DevStatCurPos is requested (the cursor position).
+// The terminal replies with "CSI r ; c R" where "r" is the row and "c" the column.
+// DecodeArgs can be used to get the row and column values from the reply bytes.
+func DecodeArgs(b []byte, dst ...*uint64) int {
+	if len(b) == 0 || len(dst) == 0 {
+		return 0
+	}
+	start := bytes.IndexAny(b, "0123456789")
+	if start < 0 {
+		return 0
+	}
+
+	var count int
+	b = b[start:]
+	for _, d := range dst {
+		v, nb := decodeArg(b)
+		*d = v
+		b = b[nb:]
+		count++
+
+		// continue only if there are still bytes and the current is a semicolon
+		if len(b) == 0 || b[0] != ';' {
+			return count
+		}
+
+		next := bytes.IndexAny(b, "0123456789")
+		if next != 1 { // 0 being the semicolon
+			return count
+		}
+		b = b[next:]
+	}
+	return count
+}
+
+// decodes the number at the start of b, returns the number decoded and
+// the number of bytes used for that number.
+func decodeArg(b []byte) (uint64, int) {
+	var v uint64
+	for i, ch := range b {
+		switch ch {
+		case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9':
+			v *= 10
+			v += uint64(ch - '0')
+		default:
+			return v, i
+		}
+	}
+	return v, len(b)
+}
+
 // IsCSI returns true if b starts with the Control Sequence Introducer
 // bytes ("\x1b[", or <ESC> followed by '[').
 func IsCSI(b []byte) bool {

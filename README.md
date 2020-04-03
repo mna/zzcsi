@@ -25,9 +25,10 @@ CSI escape sequence without allocation.
 ```
 benchmark                       iter      time/iter   bytes alloc        allocs
 ---------                       ----      ---------   -----------        ------
-BenchmarkCSI/Func-4          9259478   118.00 ns/op       24 B/op   2 allocs/op
-BenchmarkCSI/FuncString-4    9003938   133.00 ns/op       32 B/op   3 allocs/op
-BenchmarkCSI/AppendFunc-4   20808049    58.40 ns/op        0 B/op   0 allocs/op
+BenchmarkCSI/Func-4          9971707   116.00 ns/op       24 B/op   2 allocs/op
+BenchmarkCSI/FuncString-4    8935776   135.00 ns/op       32 B/op   3 allocs/op
+BenchmarkCSI/AppendFunc-4   20534767    58.80 ns/op        0 B/op   0 allocs/op
+BenchmarkCSI/DecodeArgs-4   20537282    55.00 ns/op        0 B/op   0 allocs/op
 ```
 
 ## License

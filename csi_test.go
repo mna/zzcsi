@@ -55,6 +55,46 @@ func TestFunc_Args(t *testing.T) {
 	}
 }
 
+func TestDecodeArgs(t *testing.T) {
+	cases := []struct {
+		in    string
+		want  []uint64
+		count int
+	}{
+		{"\x1b[0n", nil, 0},
+		{"\x1b[0n", []uint64{0}, 1},
+		{"\x1b[0n", []uint64{0, 0, 0}, 1},
+		{"\x1b[0;1n", []uint64{0, 1, 0}, 2},
+		{"\x1b[0;1;2n", []uint64{0, 1, 2}, 3},
+		{"\x1b[0;1;2;3n", []uint64{0, 1, 2}, 3},
+		{"\x1b[127n", []uint64{127, 0, 0}, 1},
+		{"\x1b[127;87650n", []uint64{127, 87650, 0}, 2},
+		{"\x1b[127; 1", []uint64{127, 0}, 1},
+		{"\x1b[1;2;3", nil, 0},
+		{"\x1b[1;2;3p", []uint64{1}, 1},
+	}
+	for _, c := range cases {
+		t.Run(c.in, func(t *testing.T) {
+			args := make([]*uint64, len(c.want))
+			for i := range args {
+				args[i] = new(uint64)
+			}
+
+			n := DecodeArgs([]byte(c.in), args...)
+			if n != c.count {
+				t.Fatalf("want %d args, got %d", c.count, n)
+			}
+
+			for j := 0; j < n; j++ {
+				want, got := c.want[j], *args[j]
+				if want != got {
+					t.Fatalf("%d: want %d, got %d", j, want, got)
+				}
+			}
+		})
+	}
+}
+
 func TestIsCSI(t *testing.T) {
 	for _, seq := range csiSeqs {
 		if len(seq) == 0 {
@@ -92,6 +132,7 @@ func TestIsCSI(t *testing.T) {
 var (
 	BenchmarkResultString string
 	BenchmarkResultBytes  []byte
+	BenchmarkResultInt    int
 )
 
 func BenchmarkCSI(b *testing.B) {
@@ -112,6 +153,19 @@ func BenchmarkCSI(b *testing.B) {
 		b.ResetTimer()
 		for i := 0; i < b.N; i++ {
 			BenchmarkResultBytes = ChLnCol.AppendFunc(buf, 12, 80)
+		}
+	})
+
+	b.Run("DecodeArgs", func(b *testing.B) {
+		var r, c uint64
+		seq := []byte("\x1b[12;33R")
+		b.ResetTimer()
+
+		for i := 0; i < b.N; i++ {
+			BenchmarkResultInt = DecodeArgs(seq, &r, &c)
+			if r != 12 || c != 33 {
+				b.Fatalf("got %d, %d", r, c)
+			}
 		}
 	})
 }
